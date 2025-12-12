@@ -9,8 +9,8 @@ one:
   composition: 
   indications: 
   dosage: 
-  category: one
   published: false
+  category: one
 
 two:
   name: MyString
@@ -21,5 +21,5 @@ two:
   composition: 
   indications: 
   dosage: 
-  category: two
   published: false
+  category: two
