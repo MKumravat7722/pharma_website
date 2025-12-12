@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  slug: MyString
+  brand: MyString
+  short_description: MyText
+  description: MyText
+  composition: 
+  indications: 
+  dosage: 
+  category: one
+  published: false
+
+two:
+  name: MyString
+  slug: MyString
+  brand: MyString
+  short_description: MyText
+  description: MyText
+  composition: 
+  indications: 
+  dosage: 
+  category: two
+  published: false
