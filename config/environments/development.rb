@@ -26,6 +26,8 @@ Rails.application.configure do
   end
 
   # Change to :null_store to avoid any caching.
+  Rails.application.routes.default_url_options[:host] = "http://localhost:3000"
+
   config.cache_store = :memory_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).

@@ -6,6 +6,8 @@ gem "rails", "~> 8.0.4"
 gem "propshaft"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
+
+gem "byebug"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
@@ -16,6 +18,9 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
+
+gem 'rack-cors', require: 'rack/cors'
+
 
 gem "rubocop"
 gem "active_model_serializers"
