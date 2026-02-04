@@ -1,152 +1,207 @@
-puts "🗑️ Deleting all existing data..."
+PageSection.destroy_all
+Page.destroy_all
 
-# Delete ActiveStorage (important when re-seeding images)
-ActiveStorage::Attachment.delete_all
-ActiveStorage::Blob.delete_all
+IMAGE_DIR = Rails.root.join("db", "seed_files", "images")
 
-PageSection.delete_all
-Page.delete_all
-ProductDocument.delete_all
-Product.delete_all
-Category.delete_all
-Faq.delete_all
-Testimonial.delete_all
-Setting.delete_all
-ContactSubmission.delete_all
+def attach_image(record, filename)
+  path = IMAGE_DIR.join(filename)
 
-puts "✔️ All old data removed."
+  return unless File.exist?(path)
 
-# Helpers ----------------------------------------
-def file_image(name)
-  File.open(Rails.root.join("db/seed_files/images/#{name}"))
+  record.images.attach(
+    io: File.open(path),
+    filename: filename,
+    content_type: "image/jpeg"
+  )
 end
 
-def file_pdf(name)
-  File.open(Rails.root.join("db/seed_files/pdfs/#{name}"))
-end
-
-puts "📦 Creating fresh data..."
-
-# ------------------------------------------------
-# CATEGORIES
-# ------------------------------------------------
-cat1 = Category.create!(name: "Pain Relief", slug: "pain-relief")
-cat2 = Category.create!(name: "Antibiotics", slug: "antibiotics")
-cat3 = Category.create!(name: "Vitamins & Supplements", slug: "vitamins-supplements")
-
-# ------------------------------------------------
-# PRODUCTS
-# ------------------------------------------------
-p1 = Product.create!(
-  name: "Paracetamol 500mg",
-  slug: "paracetamol-500",
-  brand: "MediCure",
-  short_description: "Relief from pain & fever.",
-  description: "Paracetamol helps reduce fever and mild pain.",
-  composition: { amount: "500mg", ingredient: "Paracetamol" },
-  indications: { uses: ["Pain", "Fever"] },
-  dosage: { adult: "1 tablet every 6 hours" },
-  published: true,
-  category: cat1
-)
-p1.images.attach(io: file_image("product1.jpg"), filename: "product1.jpg")
-p1_doc = p1.product_documents.create!(title: "Paracetamol Leaflet", document_type: "leaflet")
-p1_doc.file.attach(io: file_pdf("leaflet.pdf"), filename: "leaflet.pdf")
-
-p2 = Product.create!(
-  name: "Amoxicillin 250mg",
-  slug: "amoxicillin-250",
-  brand: "MediCure",
-  short_description: "Broad-spectrum antibiotic.",
-  description: "Useful for many bacterial infections.",
-  composition: { amount: "250mg", ingredient: "Amoxicillin" },
-  indications: { uses: ["Throat infection", "Ear infection"] },
-  dosage: { adult: "3 times daily" },
-  published: true,
-  category: cat2
-)
-p2.images.attach(io: file_image("product2.jpg"), filename: "product2.jpg")
-
-p3 = Product.create!(
-  name: "Vitamin C 500mg",
-  slug: "vitamin-c-500",
-  brand: "NutriPlus",
-  short_description: "Boost immunity.",
-  description: "Vitamin C for antioxidant support.",
-  composition: { amount: "500mg", ingredient: "Ascorbic Acid" },
-  indications: { uses: ["Immunity support"] },
-  dosage: { adult: "1 daily" },
-  published: true,
-  category: cat3
-)
-p3.images.attach(io: file_image("product3.jpg"), filename: "product3.jpg")
-
-# ------------------------------------------------
-# FAQ
-# ------------------------------------------------
-Faq.create!([
-  { question: "Are your products WHO-GMP certified?", answer: "Yes, all products follow WHO-GMP.", position: 1 },
-  { question: "Do you offer doctor samples?", answer: "Yes, available upon request.", position: 2 }
-])
-
-# ------------------------------------------------
-# TESTIMONIALS
-# ------------------------------------------------
-t1 = Testimonial.create!(
-  author: "Dr. Rahul Sharma",
-  designation: "General Physician",
-  quote: "Great quality and consistency.",
-  approved: true
-)
-t1.photo.attach(io: file_image("doctor1.jpg"), filename: "doctor1.jpg")
-
-# ------------------------------------------------
-# PAGES + SECTIONS
-# ------------------------------------------------
-
+# =========================
+# HOME PAGE
+# =========================
 home = Page.create!(
   title: "Home",
   slug: "home",
-  meta_title: "Welcome to Pharma",
-  meta_description: "High-quality medicines",
-  settings: {},
+  meta_title: "Brew Café | Fresh Coffee",
+  meta_description: "Best coffee and cozy vibes",
   published: true
 )
-home.images.attach(io: file_image("hero.jpg"), filename: "hero.jpg")
+attach_image(home, "hero.jpg")
 
-home.page_sections.create!(
-  position: 1,
+home_hero = PageSection.create!(
+  page: home,
   section_type: "hero",
-  content: { heading: "Quality Healthcare", subheading: "Trusted Medicines" }
+  position: 1,
+  content: {
+    heading: "Brew Café",
+    subheading: "Fresh coffee • Cozy vibes",
+    cta_text: "View Menu",
+    cta_link: "/menu"
+  }
 )
+attach_image(home_hero, "hero.jpg")
 
-home.page_sections.create!(
+home_text = PageSection.create!(
+  page: home,
+  section_type: "text",
   position: 2,
-  section_type: "rich_text",
-  content: { html: "<p>We manufacture high-quality pharma products.</p>" }
+  content: {
+    title: "Welcome to Brew Café",
+    description: "A cozy place to enjoy handcrafted coffee and snacks."
+  }
+)
+attach_image(home_text, "leaflet.jpg")
+
+
+# =========================
+# GALLERY PAGE
+# =========================
+gallery = Page.create!(
+  title: "Gallery",
+  slug: "gallery",
+  meta_title: "Gallery | Brew Café",
+  meta_description: "Moments at Brew Café",
+  published: true
+)
+attach_image(gallery, "product3.jpg")
+
+gallery_section = PageSection.create!(
+  page: gallery,
+  section_type: "gallery",
+  position: 1,
+  content: {
+    title: "Our Café Moments"
+  }
 )
 
+%w[product1.jpg product2.jpg product3.jpg hero.jpg].each do |img|
+  attach_image(gallery_section, img)
+end
+
+
+
+
+# =========================
+# ABOUT PAGE
+# =========================
 about = Page.create!(
   title: "About Us",
-  slug: "about-us",
-  meta_title: "About Our Company",
-  meta_description: "Trusted pharmaceutical manufacturer",
-  settings: {},
+  slug: "about",
+  meta_title: "About Us | Brew Café",
+  meta_description: "Know more about Brew Café",
   published: true
 )
+attach_image(about, "about.jpg")
 
-about.page_sections.create!(
+about_section = PageSection.create!(
+  page: about,
+  section_type: "text",
   position: 1,
-  section_type: "hero",
-  content: { heading: "About Our Company", subheading: "Delivering quality since 1998" }
+  content: {
+    title: "Our Story",
+    description: "We started Brew Café to bring people together over great coffee."
+  }
 )
+attach_image(about_section, "about.jpg")
 
-# ------------------------------------------------
-# SETTINGS
-# ------------------------------------------------
-Setting.create!(
-  key: "company_info",
-  value: { email: "info@pharma.com", phone: "9999999999", address: "Indore, India" }
+# =========================
+# LOCATION PAGE
+# =========================
+location = Page.create!(
+  title: "Location",
+  slug: "location",
+  meta_title: "Location | Brew Café",
+  meta_description: "Find Brew Café near you",
+  published: true
 )
+attach_image(location, "leaflet.jpg")
 
-puts "🎉 SEEDING COMPLETE!"
+location_section = PageSection.create!(
+  page: location,
+  section_type: "location",
+  position: 1,
+  content: {
+    address: "Indore, Madhya Pradesh",
+    hours: "9 AM – 11 PM",
+    map_embed_url: "https://maps.google.com"
+  }
+)
+attach_image(location_section, "leaflet.jpg")
+
+# =========================
+# MENU PAGE
+# =========================
+menu = Page.create!(
+  title: "Menu",
+  slug: "menu",
+  meta_title: "Menu | Brew Café",
+  meta_description: "Explore our coffee menu",
+  published: true
+)
+attach_image(menu, "product1.jpg")
+
+menu_section = PageSection.create!(
+  page: menu,
+  section_type: "menu",
+  position: 1,
+  content: {
+    items: [
+      { name: "Espresso", price: 120 },
+      { name: "Cappuccino", price: 150 },
+      { name: "Latte", price: 160 },
+      { name: "Cold Coffee", price: 180 }
+    ]
+  }
+)
+attach_image(menu_section, "product2.jpg")
+
+
+# =========================
+# MERCHANDISE PAGE
+# =========================
+merch = Page.create!(
+  title: "Merchandise",
+  slug: "merchandise",
+  meta_title: "Merchandise | Brew Café",
+  meta_description: "Brew Café merchandise",
+  published: true
+)
+attach_image(merch, "product1.jpg")
+
+merch_section = PageSection.create!(
+  page: merch,
+  section_type: "merchandise",
+  position: 1,
+  content: {
+    items: [
+      { name: "Coffee Mug", price: 499 },
+      { name: "T-Shirt", price: 799 }
+    ]
+  }
+)
+attach_image(merch_section, "product2.jpg")
+
+# =========================
+# CONTACT PAGE
+# =========================
+contact = Page.create!(
+  title: "Contact Us",
+  slug: "contact",
+  meta_title: "Contact | Brew Café",
+  meta_description: "Get in touch with Brew Café",
+  published: true
+)
+attach_image(contact, "about.jpg")
+
+contact_section = PageSection.create!(
+  page: contact,
+  section_type: "contact",
+  position: 1,
+  content: {
+    address: "Indore, Madhya Pradesh",
+    phone: "+91 99999 99999",
+    email: "brewcafe@gmail.com"
+  }
+)
+attach_image(contact_section, "about.jpg")
+
+puts "✅ All café pages seeded with correct images"

@@ -7,24 +7,23 @@ class PageSerializer < ActiveModel::Serializer
              :meta_title,
              :meta_description,
              :settings,
-             :published,
              :images,
              :sections
 
   def images
     return [] unless object.images.attached?
 
-    object.images.map { |img| rails_blob_url(img, only_path: false) }
+    object.images.map { |img| rails_blob_url(img) }
   end
 
   def sections
-    object.page_sections.map do |s|
+    object.page_sections.order(:position).map do |s|
       {
         id: s.id,
-        section_type: s.section_type,
+        type: s.section_type,
         position: s.position,
         content: s.content || {},
-        images: s.images.map { |img| rails_blob_url(img, only_path: false) }
+        images: s.images.attached? ? s.images.map { |img| rails_blob_url(img) } : []
       }
     end
   end
