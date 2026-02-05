@@ -101,7 +101,7 @@ about_section = PageSection.create!(
     description: "We started Brew Café to bring people together over great coffee."
   }
 )
-attach_image(about_section, "about.jpg")
+attach_image(about_section, "product2.jpg")
 
 # =========================
 # LOCATION PAGE
