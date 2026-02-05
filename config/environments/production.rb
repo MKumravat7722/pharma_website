@@ -12,7 +12,6 @@ Rails.application.configure do
   # Full error reports are disabled.
   config.consider_all_requests_local = false
   config.active_job.queue_adapter = :async
-  config.action_cable.adapter = :async
 
 
   # Turn on fragment caching in view templates.
