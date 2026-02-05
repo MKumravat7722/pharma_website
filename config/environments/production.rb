@@ -11,6 +11,8 @@ Rails.application.configure do
 
   # Full error reports are disabled.
   config.consider_all_requests_local = false
+  config.active_job.queue_adapter = :async
+
 
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
@@ -50,7 +52,7 @@ Rails.application.configure do
   config.cache_store = :solid_cache_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
+  # config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
